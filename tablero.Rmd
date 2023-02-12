@@ -1,12 +1,11 @@
 ---
 title: "Carrera de la luz - Jan Polanco Velasco"
-runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
     theme:
-      bg: "#101010"
-      fg: "#FDF7F7" 
-      primary: "#ED79F9"
+      bg: "#FFFFFF"
+      fg: "#000000" 
+      primary: "#2C3E50"
       base_font: !expr bslib::font_google("Prompt")
       code_font: !expr bslib::font_google("JetBrains Mono")
     orientation: rows
@@ -24,13 +23,9 @@ library(ggplot2)
 library(plotly)
 library(paqueteMET)
 library(knitr)
-bslib::bs_themer()
-thematic::thematic_rmd(
-  font = "auto",
-  # To get the dark bg on the geom_raster()
-  sequential = thematic::sequential_gradient(fg_low = FALSE, fg_weight = 0, bg_weight = 1)
-)
-theme_set(theme_bw(base_size = 20))
+
+
+
 
 data("CarreraLuz22")
 
@@ -79,10 +74,11 @@ origen    = CarreraLuz22$origen
 categoria = CarreraLuz22$categoria
 nacio     = CarreraLuz22$nacionalidad
 ```
-Row {.tabset .tabset-fade}
------------------------------------------------------------------------
+
+## Row {.tabset .tabset-fade}
 
 ### Genero
+
 ```{r, fig.height=7}
 library(plotly)
 plotlyOutput("plotly")
@@ -96,6 +92,7 @@ plot_ly(x = genero, y = table(genero), type = "bar", name = "Género",
 ```
 
 ### Origenes
+
 ```{r}
 library(plotly)
 plotlyOutput("plotly")
@@ -106,6 +103,7 @@ plot_ly(x = origen, y = table(origen), type = "bar", name = "Orígen") %>%
 ```
 
 ### Edad
+
 ```{r}
 library(plotly)
 plotlyOutput("plotly")
@@ -117,6 +115,7 @@ plot_ly(x = edades, y = table(edades), type = "histogram", name = "Edades")%>%
 ```
 
 ### Categoria
+
 ```{r}
 library(plotly)
 plotlyOutput("plotly")
@@ -129,6 +128,7 @@ plot_ly(labels = unique(categoria), values = table(categoria), type = "pie",
 ```
 
 ### Nacionalidad
+
 ```{r}
 library(plotly)
 plotlyOutput("plotly")
@@ -138,9 +138,11 @@ plot_ly(labels = unique(CarreraLuz22$nacionalidad), values = table(CarreraLuz22$
   layout(title = "Distribución de los origenes de las personas",
          showlegend = TRUE)
 ```
-Row
------------------------------------------------------------------------
-### minimo  {.value-box}
+
+## Row
+
+### minimo {.value-box}
+
 ```{r}
 valueBox(value =paste(round(min(CarreraLuz22$timerun/60),1), "min"), 
          caption = "Tiempo ganador", 
@@ -148,7 +150,8 @@ valueBox(value =paste(round(min(CarreraLuz22$timerun/60),1), "min"),
          color = "#18BC9C")
 ```
 
-### velocidad  {.value-box}
+### velocidad {.value-box}
+
 ```{r}
 valueBox(value =paste(round(10070/min(CarreraLuz22$timerun),2),"m/s"), # ud1$cierre, 
          caption = "Máxima velocidad", 
@@ -156,7 +159,8 @@ valueBox(value =paste(round(10070/min(CarreraLuz22$timerun),2),"m/s"), # ud1$cie
          color = "#18BC9C")
 ```
 
-### distancia  {.value-box}
+### distancia {.value-box}
+
 ```{r}
 valueBox(value = paste(10.07,"Km"), #ud1$min, 
          caption = "Distancia recorrida", 
@@ -164,7 +168,8 @@ valueBox(value = paste(10.07,"Km"), #ud1$min,
          color = "#18BC9C")
 ```
 
-### volumen  {.value-box}
+### volumen {.value-box}
+
 ```{r}
 valueBox(value = paste(length(CarreraLuz22$timerun),"atletas"), 
          caption = "Número de participantes", 
@@ -172,8 +177,8 @@ valueBox(value = paste(length(CarreraLuz22$timerun),"atletas"),
          color = "#18BC9C")
 ```
 
+### porcentaje {.value-box}
 
-### porcentaje  {.value-box}
 ```{r}
 valueBox(value = paste(round(length(CarreraLuz22F$timerun)/length(CarreraLuz22$timerun)*100,2),"%"), 
          caption = "Porcentaje mujeres", 
@@ -181,7 +186,8 @@ valueBox(value = paste(round(length(CarreraLuz22F$timerun)/length(CarreraLuz22$t
          color = "#18BC9C")
 ```
 
-### promedio  {.value-box}
+### promedio {.value-box}
+
 ```{r}
 valueBox(value = paste(round(mean(CarreraLuz22$timerun/60),2),"min"), 
          caption = "Tiempo promedio de carrera", 
@@ -189,36 +195,40 @@ valueBox(value = paste(round(mean(CarreraLuz22$timerun/60),2),"min"),
          color   = "#18BC9C")
 ```
 
-
-3rd Party Outputs {.tabset}
--------------------------------------
+## 3rd Party Outputs {.tabset}
 
 ### General
-    
+
 ```{r, width = "50%", center = TRUE}
 knitr::kable(CarreraLuz22)
 ```
+
 ### EDA
+
 ```{r, width = "50%", center = TRUE }
 knitr::kable(EDA)
 ```
+
 ### Sexo
+
 ```{r, width = "50%", center = TRUE, col.names = c("Sexo", "Frecuencia"), row.names = TRUE}
 knitr::kable(CATsex)
 ```
+
 ### Origen
+
 ```{r, width = "50%", center = TRUE }
 knitr::kable(CATorigen)
 ```
+
 ### Categoria
+
 ```{r, width = "50%", center = TRUE}
 knitr::kable(CATcategoria)
 ```
+
 ### Nacionalidad
+
 ```{r, width = "50%", center = TRUE}
 knitr::kable(CATnacionalidad)
 ```
-
-
-
-
