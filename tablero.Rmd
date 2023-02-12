@@ -1,30 +1,63 @@
 ---
-title: "Carrera La Luz 2022"
-subtile: "Actividad 1 - Métodos y Simulación Estadística"
+title: "Carrera de la luz - Jan Polanco Velasco"
+runtime: shiny
 output: 
   flexdashboard::flex_dashboard:
     theme:
-      bg: "#FFFFFF"
-      fg: "#034A94" 
-      primary: "#034A94" 
-      base_font:
-        google: Sen
-      code_font:
-        google: JetBrains Mono
-    orientation: columns
-    vertical_layout: fill
+      bg: "#101010"
+      fg: "#FDF7F7" 
+      primary: "#ED79F9"
+      base_font: !expr bslib::font_google("Prompt")
+      code_font: !expr bslib::font_google("JetBrains Mono")
+    orientation: rows
+    social: menu
+    source_code: embed
+    navbar:
+      - { title: "GitHub", href: "https://github.com/hamsomp3/act1_met_sim_est_tablero", align: right, icon: fa-github }
+      - { title: "Jan Polanco", href: "https://www.linkedin.com/in/jan-polanco-velasco/", align: right, icon: fa-linkedin }
+      - { title: "Carrera de la Luz 2022", href: "https://juanchocorrelon.com/", align: right, icon: ion-link}
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, context = "server"}
 library(flexdashboard)
-# Install thematic and un-comment for themed static plots (i.e., ggplot2)
-# thematic::thematic_rmd()
 library(ggplot2)
+library(plotly)
 library(paqueteMET)
+library(knitr)
+bslib::bs_themer()
+thematic::thematic_rmd(
+  font = "auto",
+  # To get the dark bg on the geom_raster()
+  sequential = thematic::sequential_gradient(fg_low = FALSE, fg_weight = 0, bg_weight = 1)
+)
+theme_set(theme_bw(base_size = 20))
 
 data("CarreraLuz22")
 
-  
+CarreraLuz22M = subset(CarreraLuz22, CarreraLuz22$sex=="Hombre")
+CarreraLuz22F = subset(CarreraLuz22, CarreraLuz22$sex=="Mujer")
+
+CarreraLuz22$origen <- gsub("Tuluá", "Tulua", CarreraLuz22$origen)
+CarreraLuz22$origen <- ifelse(CarreraLuz22$origen == "Bogotá", "Bogota", CarreraLuz22$origen)
+CarreraLuz22$origen <- ifelse(CarreraLuz22$origen == "Bogota D.c", "Bogota", CarreraLuz22$origen)
+CarreraLuz22$origen <- ifelse(CarreraLuz22$origen == "Cali Valle", "Cali", CarreraLuz22$origen)
+CarreraLuz22$origen <- ifelse(CarreraLuz22$origen == "Popayán", "Popayan", CarreraLuz22$origen)
+CarreraLuz22$origen <- ifelse(CarreraLuz22$origen == "Florida Va", "Florida", CarreraLuz22$origen)
+CarreraLuz22$origen <- ifelse(CarreraLuz22$origen == "Santander", "Santander De Quilichao", CarreraLuz22$origen)
+CarreraLuz22$origen <- ifelse(CarreraLuz22$origen == "Tuluá", "Tulua", CarreraLuz22$origen)
+CarreraLuz22$origen <- ifelse(CarreraLuz22$origen == "Jamundí", "Jamundi", CarreraLuz22$origen)
+CarreraLuz22$nacionalidad <- ifelse(CarreraLuz22$nacionalidad ==0, "COL",CarreraLuz22$nacionalidad)
+# tablas
+EDA                 = summary(CarreraLuz22)
+CATsex              = table(CarreraLuz22$sex)
+CATorigen           = table(CarreraLuz22$origen)
+CATcategoria        = table(CarreraLuz22$categoria)
+CATnacionalidad     = table(CarreraLuz22$nacionalidad)
+
+
+
+
+
 Theme2 = theme(
   axis.title.x = element_text(size = 8),
   axis.text.x = element_text(size = 8),
@@ -35,160 +68,108 @@ Theme2 = theme(
   legend.text = element_text(size = 8),  
   strip.text = element_text(size=8),
   title =element_text(size=8, face='bold')
-)# tamaño letra por grupos
-
-# subsets-----------------------------------------------------------------------
-CarreraLuz22$sex[CarreraLuz22$sex == "M"]="Hombre"
-CarreraLuz22$sex[CarreraLuz22$sex == "F"]="Mujer"
-#-------------------------------------------------------------------------------
-CarreraLuz22M = subset(CarreraLuz22, CarreraLuz22$sex=="Hombre")
-CarreraLuz22F = subset(CarreraLuz22, CarreraLuz22$sex=="Mujer")
-
-#-------------------------------------------------------------------------------
-CarreraLuz22_c1M = subset(CarreraLuz22M, CarreraLuz22M$categoria=="1. Juvenil")
-CarreraLuz22_c2M = subset(CarreraLuz22M, CarreraLuz22M$categoria=="2. Abierta")
-CarreraLuz22_c3M = subset(CarreraLuz22M, CarreraLuz22M$categoria=="3. Veteranos A")
-CarreraLuz22_c4M = subset(CarreraLuz22M, CarreraLuz22M$categoria=="4. Veteranos B")
-CarreraLuz22_c5M = subset(CarreraLuz22M, CarreraLuz22M$categoria=="5. Veteranos C")
+  )# tamaño letra por grupos
 
 
-CarreraLuz22_c1F = subset(CarreraLuz22F, CarreraLuz22F$categoria=="1. Juvenil")
-CarreraLuz22_c2F = subset(CarreraLuz22F, CarreraLuz22F$categoria=="2. Abierta")
-CarreraLuz22_c3F = subset(CarreraLuz22F, CarreraLuz22F$categoria=="3. Veteranos A")
-CarreraLuz22_c4F = subset(CarreraLuz22F, CarreraLuz22F$categoria=="4. Veteranos B")
-CarreraLuz22_c5F = subset(CarreraLuz22F, CarreraLuz22F$categoria=="5. Veteranos C")
-#-------------------------------------------------------------------------------
 
-categoria= c("Juvenil","Abierta","Veteranos A", "Veteranos B","Veteranos C")
-t2 = aggregate(CarreraLuz22$timerun/60, by=list(CarreraLuz22$categoria,CarreraLuz22$sex), FUN= summary)
-t2=t2$x
-t2m=t2[1:5,] 
-row.names(t2m)=categoria
-t2h=t2[6:10,] 
-row.names(t2h)=categoria
+# subconjuntossubsets-----------------------------------------------------------------------
+genero    = CarreraLuz22$sex
+edades    = CarreraLuz22$edad
+origen    = CarreraLuz22$origen
+categoria = CarreraLuz22$categoria
+nacio     = CarreraLuz22$nacionalidad
 ```
-
-Column {data-width=700 .tabset}
+Row {.tabset .tabset-fade}
 -----------------------------------------------------------------------
 
-### Tiempos de carrera
+### Genero
+```{r, fig.height=7}
+library(plotly)
+plotlyOutput("plotly")
+plot_ly(x = genero, y = table(genero), type = "bar", name = "Género", 
+        marker = list(color = c("blue", "pink")),
+        text = paste("Hombres:",table(genero)[1],"<br>Mujeres:",table(genero)[2]),
+        textposition = "outside") %>% 
+  layout(title = "Frecuencia de Cada Género",
+         xaxis = list(title = "Género"),
+         yaxis = list(title = "Frecuencia"))
+```
 
+### Origenes
 ```{r}
-paleta6=c("#447270", "#6B9493", "#F6E271", "#F6B916", "#F69312", "#BC6C25")
-p1=ggplot(CarreraLuz22F, aes(y=timerun/60, x=categoria))+
-  geom_jitter(color="#034A94", size=1, alpha=0.9) +
-  aes(color=paleta6)+
-  labs(title = " ",
-       y= "tiempo - min",
-       x= "categorías")+ 
-  #facet_wrap(~ sex)
-  #facet_grid(vars(sex), scale="free")+
-  ylim(0,170)+
-  Theme2
-
-p1
-
+library(plotly)
+plotlyOutput("plotly")
+plot_ly(x = origen, y = table(origen), type = "bar", name = "Orígen") %>%
+  layout(title = "Frecuencia de Cada Orígen",
+         xaxis = list(title = "Orígen"),
+         yaxis = list(title = "Frecuencia"))
 ```
 
-### Hombre por categorías
-
-```{r, fig.height=3}
-ggplot(CarreraLuz22M, aes(x = categoria, y = timerun/60 )) +
-  geom_boxplot(aes(fill = categoria)) + 
-  # facet_wrap(~sex, ncol=1, labeller = labeller(dose = etiquetas))+
-  labs(title = "", y= "tiempo - min", x= "categorías")+
-  scale_fill_brewer() +
-  #scale_fill_manual(values = c("#00070D", "#012447", "#034A94", "#0570E1", "#3998FB","#37B6FC"))+
-  theme(legend.position = "none")
-t2h
-```
-
-### Mujeres por categoría
-```{r, fig.height=3}
-ggplot(CarreraLuz22F, aes(x = categoria, y = timerun/60 )) +
-  geom_boxplot(aes(fill = categoria)) + 
-  # facet_wrap(~sex, ncol=1, labeller = labeller(dose = etiquetas))+
-  labs(title = "", y= "tiempo - min", x= "categorías")+
-  scale_fill_brewer() +
-  #scale_fill_manual(values = c("#00070D", "#012447", "#034A94", "#0570E1", "#3998FB","#37B6FC"))+
-  theme(legend.position = "none")
-t2m
-```
-
-### Más información
-
-```{r, echo=FALSE, out.width="30%", fig.align = "center"}
-knitr::include_graphics("carrera1.png")
-```
-
-**10.07 K** Participantes desde los 15 años en adelante.
-
-**Salida**: Hotel Intercontinental, calle 5, Carrera 6, carrera 4c, carrera1, carrera 4, calle de la escopeta, museo arqueológico la merced, bulevar del rio, puente Ortiz, av 2N, parque lineal rio Cali av2n, calle 25, parque lineal av1n, calle 13, carrera 1 calle 12, carrera 5, calle 10, gobernación del valle, edificio Aristi carrera 9, calle 9 plazoleta de san francisco, bulevar del rio, calle 8, carrera 4, carrera 3ª, parque del peñón, carrera 3, carrera 3ª oeste, calle 5 oeste, carrera 4, av Belalcázar, carrera 2ª oeste, librería nacional, carrera 1c, museo la tertulia, av Colombia, pepe ganga, carrera 3, carrera 2, carrera 3ª, av Colombia, carrera 4, meta hotel intercontinental. [juanchocorrelon.com](https://juanchocorrelon.com/intercontinental-10k-luz-2022/#10k)
-
-Column {data-width=400}
------------------------------------------------------------------------
-
-### Tiempo mujeres categoría Abierta
-
+### Edad
 ```{r}
-# seleccion de bases
-dataFc2=subset(CarreraLuz22, (CarreraLuz22$sex=="Mujer" & CarreraLuz22$categoria=="2. Abierta")) # dataset de mujeres
-x=dataFc2$timerun/60
-hist(x, xlim=c(30,120), ylim=c(0,80),las=1,
-main = " ",
-xlab="tiempo (min)",
-ylab = "frecuencia",
-col ="#ee964b")
+library(plotly)
+plotlyOutput("plotly")
+plot_ly(x = edades, y = table(edades), type = "histogram", name = "Edades")%>%
+  layout(title = "Distribución de la edad de los corredores",
+         xaxis = list(title = "Edad"),
+         yaxis = list(title = "Frecuencia"),
+         shapes = list(list(type = "line", x0 = mean(edades), x1 = mean(edades), y0 = 0, y1 = max(table(edades)),yref = "paper", line = list(color = "red", width = 2)),list(type = "line", x0 = mean(edades) - sd(edades), x1 = mean(edades) - sd(edades), y0 = 0, y1 = max(table(edades)), yref = "paper", line = list(color = "black", width = 2, dash = "dot")),list(type = "line", x0 = mean(edades) + sd(edades), x1 = mean(edades) + sd(edades), y0 = 0, y1 = max(table(edades)), yref = "paper", line = list(color = "black", width = 2, dash = "dot"))))
 ```
 
-### Tiempo hombres categoría Abierta
-
+### Categoria
 ```{r}
-# seleccion de bases
-dataMc2=subset(CarreraLuz22, (CarreraLuz22$sex=="Hombre" & CarreraLuz22$categoria=="2. Abierta")) # dataset de mujeres
-x=dataMc2$timerun/60
-hist(x, xlim=c(30,120), ylim=c(0,250),las=1,
-main = " ",
-xlab="tiempo (min)",
-ylab = "frecuencia",
-col ="#ee964b")
+library(plotly)
+plotlyOutput("plotly")
+plot_ly(labels = unique(categoria), values = table(categoria), type = "pie",
+        textposition = "inside",
+        marker = list(colors = c("blue", "orange", "green", "red", "purple")),
+        text = paste(table(categoria))) %>% 
+  layout(title = "Distribución de las categorías en la carrera",
+         showlegend = TRUE)
 ```
 
-Column { data-width=50 }
+### Nacionalidad
+```{r}
+library(plotly)
+plotlyOutput("plotly")
+plot_ly(labels = unique(CarreraLuz22$nacionalidad), values = table(CarreraLuz22$nacionalidad), type = "pie",
+        textposition = "inside",
+        text = paste(table(nacio))) %>%
+  layout(title = "Distribución de los origenes de las personas",
+         showlegend = TRUE)
+```
+Row
 -----------------------------------------------------------------------
 ### minimo  {.value-box}
 ```{r}
 valueBox(value =paste(round(min(CarreraLuz22$timerun/60),1), "min"), 
          caption = "Tiempo ganador", 
          icon = "fa-thumbs-up", 
-         color = "#0EB0C6")
+         color = "#18BC9C")
 ```
-
 
 ### velocidad  {.value-box}
 ```{r}
 valueBox(value =paste(round(10070/min(CarreraLuz22$timerun),2),"m/s"), # ud1$cierre, 
          caption = "Máxima velocidad", 
-         icon = "fa-clock", 
-         color = "#0EB0C6")
+         icon = "ion-ios-speedometer", 
+         color = "#18BC9C")
 ```
-
 
 ### distancia  {.value-box}
 ```{r}
 valueBox(value = paste(10.07,"Km"), #ud1$min, 
          caption = "Distancia recorrida", 
-         icon = "fa-solod fa-person-walking-arrow-right", 
-         color = "#0EB0C6")
+         icon = "ion-android-pin", 
+         color = "#18BC9C")
 ```
-
 
 ### volumen  {.value-box}
 ```{r}
 valueBox(value = paste(length(CarreraLuz22$timerun),"atletas"), 
          caption = "Número de participantes", 
-         icon = "fa-people", 
-         color = "#0EB0C6")
+         icon = "ion-android-contacts", 
+         color = "#18BC9C")
 ```
 
 
@@ -196,16 +177,48 @@ valueBox(value = paste(length(CarreraLuz22$timerun),"atletas"),
 ```{r}
 valueBox(value = paste(round(length(CarreraLuz22F$timerun)/length(CarreraLuz22$timerun)*100,2),"%"), 
          caption = "Porcentaje mujeres", 
-         icon = "  ", 
-         color = "#0EB0C6")
+         icon = "ion-woman", 
+         color = "#18BC9C")
 ```
 
 ### promedio  {.value-box}
 ```{r}
 valueBox(value = paste(round(mean(CarreraLuz22$timerun/60),2),"min"), 
          caption = "Tiempo promedio de carrera", 
-         icon = "  ", 
-         color = "#0EB0C6")
+         icon    = "ion-clock", 
+         color   = "#18BC9C")
 ```
+
+
+3rd Party Outputs {.tabset}
+-------------------------------------
+
+### General
+    
+```{r, width = "50%", center = TRUE}
+knitr::kable(CarreraLuz22)
+```
+### EDA
+```{r, width = "50%", center = TRUE }
+knitr::kable(EDA)
+```
+### Sexo
+```{r, width = "50%", center = TRUE, col.names = c("Sexo", "Frecuencia"), row.names = TRUE}
+knitr::kable(CATsex)
+```
+### Origen
+```{r, width = "50%", center = TRUE }
+knitr::kable(CATorigen)
+```
+### Categoria
+```{r, width = "50%", center = TRUE}
+knitr::kable(CATcategoria)
+```
+### Nacionalidad
+```{r, width = "50%", center = TRUE}
+knitr::kable(CATnacionalidad)
+```
+
+
 
 
