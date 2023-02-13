@@ -48,7 +48,10 @@ CATsex              = table(CarreraLuz22$sex)
 CATorigen           = table(CarreraLuz22$origen)
 CATcategoria        = table(CarreraLuz22$categoria)
 CATnacionalidad     = table(CarreraLuz22$nacionalidad)
+#Contigencia
 
+cont1=xtabs(~ sex + categoria, data=CarreraLuz22)
+cont2=xtabs(~ sex + nacionalidad, data=CarreraLuz22)
 
 
 
@@ -71,73 +74,87 @@ Theme2 = theme(
 genero    = CarreraLuz22$sex
 edades    = CarreraLuz22$edad
 origen    = CarreraLuz22$origen
-categoria = CarreraLuz22$categoria
+categori = CarreraLuz22$categoria
 nacio     = CarreraLuz22$nacionalidad
+timeds    = CarreraLuz22$timerun
 ```
 
-## Row {.tabset .tabset-fade}
+
+Row {.tabset .tabset-fade}
+-------------------------------------
 
 ### Genero
 
-```{r, fig.height=7}
-library(plotly)
-plotlyOutput("plotly")
-plot_ly(x = genero, y = table(genero), type = "bar", name = "Género", 
-        marker = list(color = c("blue", "pink")),
-        text = paste("Hombres:",table(genero)[1],"<br>Mujeres:",table(genero)[2]),
-        textposition = "outside") %>% 
-  layout(title = "Frecuencia de Cada Género",
-         xaxis = list(title = "Género"),
-         yaxis = list(title = "Frecuencia"))
-```
-
-### Origenes
-
-```{r}
-library(plotly)
-plotlyOutput("plotly")
-plot_ly(x = origen, y = table(origen), type = "bar", name = "Orígen") %>%
-  layout(title = "Frecuencia de Cada Orígen",
-         xaxis = list(title = "Orígen"),
-         yaxis = list(title = "Frecuencia"))
-```
-
-### Edad
-
-```{r}
-library(plotly)
-plotlyOutput("plotly")
-plot_ly(x = edades, y = table(edades), type = "histogram", name = "Edades")%>%
-  layout(title = "Distribución de la edad de los corredores",
-         xaxis = list(title = "Edad"),
-         yaxis = list(title = "Frecuencia"),
-         shapes = list(list(type = "line", x0 = mean(edades), x1 = mean(edades), y0 = 0, y1 = max(table(edades)),yref = "paper", line = list(color = "red", width = 2)),list(type = "line", x0 = mean(edades) - sd(edades), x1 = mean(edades) - sd(edades), y0 = 0, y1 = max(table(edades)), yref = "paper", line = list(color = "black", width = 2, dash = "dot")),list(type = "line", x0 = mean(edades) + sd(edades), x1 = mean(edades) + sd(edades), y0 = 0, y1 = max(table(edades)), yref = "paper", line = list(color = "black", width = 2, dash = "dot"))))
-```
-
-### Categoria
-
-```{r}
-library(plotly)
-plotlyOutput("plotly")
-plot_ly(labels = unique(categoria), values = table(categoria), type = "pie",
-        textposition = "inside",
-        marker = list(colors = c("blue", "orange", "green", "red", "purple")),
-        text = paste(table(categoria))) %>% 
-  layout(title = "Distribución de las categorías en la carrera",
-         showlegend = TRUE)
+```{r,fig.align = "center"}
+ggplot(data.frame(genero), aes(x = genero)) + 
+  geom_bar(aes(fill = genero), color = "black") +
+  ggtitle("Frecuencia de Cada Género") + 
+  xlab("Género") + 
+  ylab("Frecuencia") + 
+  scale_fill_manual(values = c("blue", "pink"))
 ```
 
 ### Nacionalidad
 
 ```{r}
-library(plotly)
-plotlyOutput("plotly")
-plot_ly(labels = unique(CarreraLuz22$nacionalidad), values = table(CarreraLuz22$nacionalidad), type = "pie",
-        textposition = "inside",
-        text = paste(table(nacio))) %>%
-  layout(title = "Distribución de los origenes de las personas",
-         showlegend = TRUE)
+ggplot(CarreraLuz22, aes(x = nacio)) + 
+  geom_bar(color = "black", fill = "lightblue") +
+  labs(title = "Frecuencia de Nacionalidad", x = "Nacionalidad", y = "Frequency")
 ```
+
+### Edad
+
+```{r}
+ggplot(CarreraLuz22, aes(x = edad)) + 
+  geom_histogram(bins = 30, color = "black", fill = "lightblue") +
+  labs(title = "Histograma de Edad", x = "Edad", y = "Frecuencia")
+```
+
+### Categoria
+
+```{r}
+ggplot(data.frame(categori), aes(x = categori)) +
+  geom_bar(fill = c("blue", "orange", "green", "red", "purple")) +
+  ggtitle("Distribución de las categorías en la carrera") +
+  xlab("Categoría") + ylab("Frecuencia") +
+  coord_polar("y", start = 0) +
+  scale_fill_manual(values = c("blue", "orange", "green", "red", "purple"))
+```
+
+### Tiempo
+
+```{r}
+ggplot(CarreraLuz22, aes(x = categori, y = timeds/60)) + 
+  geom_boxplot(color = "black") +
+  labs(title = "Tiempo por Categoria", x = "Categoria", y = "Tiempo")
+```
+
+
+### Violin
+```{r}
+ggplot(CarreraLuz22, aes(x = categori, y = edades)) + 
+  geom_violin(fill = "lightblue", alpha = 0.5) +
+  labs(title = "Edad por Origen", x = "Origen", y = "Edad")
+```
+
+### Densidad
+
+```{r}
+ggplot(CarreraLuz22, aes(x = timeds/60, color = categori)) + 
+  geom_density(alpha = 0.5) +
+  labs(title = "Densidad de Tiempo por Categoria", x = "Tiempo", y = "Densidad") +
+  scale_color_manual(values = c("red", "blue", "green","pink","black"))
+```
+
+
+### Scatter
+
+```{r}
+ggplot(CarreraLuz22, aes(x = edades, y = timeds/60)) + 
+  geom_point(shape = 21, size = 3, fill = "lightblue", alpha = 0.5) +
+  labs(title = "Edad vs Tiempo", x = "Edad", y = "Tiempo")
+```
+
 
 ## Row
 
@@ -173,7 +190,7 @@ valueBox(value = paste(10.07,"Km"), #ud1$min,
 ```{r}
 valueBox(value = paste(length(CarreraLuz22$timerun),"atletas"), 
          caption = "Número de participantes", 
-         icon = "ion-android-contacts", 
+         icon = "ion-ios-people", 
          color = "#18BC9C")
 ```
 
@@ -231,4 +248,13 @@ knitr::kable(CATcategoria)
 
 ```{r, width = "50%", center = TRUE}
 knitr::kable(CATnacionalidad)
+```
+
+### Contigencia 1
+```{r, width = "50%", center = TRUE}
+knitr::kable(cont1)
+```
+### Contigencia 2
+```{r, width = "50%", center = TRUE}
+knitr::kable(cont2)
 ```
