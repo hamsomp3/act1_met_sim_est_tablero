@@ -99,7 +99,7 @@ ggplot(data.frame(genero), aes(x = genero)) +
 ```{r}
 ggplot(CarreraLuz22, aes(x = nacio)) + 
   geom_bar(color = "black", fill = "lightblue") +
-  labs(title = "Frecuencia de Nacionalidad", x = "Nacionalidad", y = "Frequency")
+  labs(title = "Frecuencia de Nacionalidad", x = "Nacionalidad", y = "Frequencia")
 ```
 
 ### Edad
@@ -155,6 +155,27 @@ ggplot(CarreraLuz22, aes(x = edades, y = timeds/60)) +
   labs(title = "Edad vs Tiempo", x = "Edad", y = "Tiempo")
 ```
 
+### Análisis
+
+**Análisis:** Se realizó una limpieza de datos en el conjunto de datos "CarreraLuz22", donde se corrigieron las tildes en los nombres de las ciudades de origen, se eliminaron palabras innecesarias y se reemplazó la nacionalidad 0 por "COL".
+
+A continuación, se presentan algunos resultados del análisis exploratorio de datos:
+
+- Se observa una predominancia del género masculino en la carrera, con un 61.29% de participantes hombres y un 38.71% de mujeres.
+
+- La mayoría de los participantes son de nacionalidad colombiana (99.6%).
+
+- La edad de los participantes presenta una distribución sesgada hacia la derecha, con una mediana de 36 años.
+
+- La categoría con mayor frecuencia de participantes es "Masculino entre 35 y 39 años", seguida por "Masculino entre 30 y 34 años".
+
+- Se observa poca variabilidad en los tiempos de finalización de la carrera, como se puede ver en el diagrama de cajas y bigotes donde los percentiles 50 tienen valores parecidos.
+
+- Se presentan dos tablas de contingencia para analizar la distribución de los participantes según su género y categoría.
+
+En la primera fila del dashboard se incluyen gráficos realizados con la función $ggplot2()$, que permiten visualizar la frecuencia de género, la distribución de edades y las categorías de los participantes. Además, se muestra un diagrama de cajas y bigotes que permite identificar la variabilidad en los tiempos de finalización de la carrera.
+
+En la segunda fila se presenta información general relevante para el dashboard, y en la tercera fila se incluyen las tablas de contingencia para analizar la distribución de los participantes según género y categoría, lo cual permite un análisis más específico de la información.
 
 ## Row
 
