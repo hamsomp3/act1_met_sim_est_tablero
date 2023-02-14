@@ -169,8 +169,6 @@ A continuación, se presentan algunos resultados del análisis exploratorio de d
 
 - La edad de los participantes presenta una distribución sesgada hacia la derecha, con una mediana de 36 años.
 
-- La categoría con mayor frecuencia de participantes es "Masculino entre 35 y 39 años", seguida por "Masculino entre 30 y 34 años".
-
 - Se observa poca variabilidad en los tiempos de finalización de la carrera, como se puede ver en el diagrama de cajas y bigotes donde los percentiles 50 tienen valores parecidos.
 
 - Se presentan dos tablas de contingencia para analizar la distribución de los participantes según su género y categoría.
