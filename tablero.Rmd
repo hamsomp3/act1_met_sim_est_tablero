@@ -157,6 +157,8 @@ ggplot(CarreraLuz22, aes(x = edades, y = timeds/60)) +
 
 ### Análisis
 
+
+
 **Análisis:** Se realizó una limpieza de datos en el conjunto de datos "CarreraLuz22", donde se corrigieron las tildes en los nombres de las ciudades de origen, se eliminaron palabras innecesarias y se reemplazó la nacionalidad 0 por "COL".
 
 A continuación, se presentan algunos resultados del análisis exploratorio de datos:
